@@ -29,6 +29,26 @@ async function run() {
 
 		const classesCollection = client.db("ShapeShed").collection("classes");
 		const instructorsCollection = client.db("ShapeShed").collection("instructors"); // prettier-ignore
+		const usersCollection = client.db("ShapeShed").collection("users");
+
+		// users related apis
+		app.get("/users", async (req, res) => {
+			const result = await usersCollection.find().toArray();
+			res.send(result);
+		});
+
+		app.post("/users", async (req, res) => {
+			const user = req.body;
+			const query = { email: user.email };
+			const existingUser = await usersCollection.findOne(query);
+
+			if (existingUser) {
+				return res.send({ message: "user already exists" });
+			}
+
+			const result = await usersCollection.insertOne(user);
+			res.send(result);
+		});
 
 		// All Classes
 		app.get("/classes", async (req, res) => {
