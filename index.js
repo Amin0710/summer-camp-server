@@ -64,6 +64,25 @@ async function run() {
 			res.send(result);
 		});
 
+		// Specific Instructors
+		app.get("/instructors/:id", async (req, res) => {
+			const id = req.params.id;
+			const query = { _id: new ObjectId(id) };
+			const result = await instructorsCollection.findOne(query);
+
+			// find Instructor's classes
+			const classPromises = result.classes.map(async (className) => {
+				const classQuery = { name: className };
+				const classResult = await classesCollection.findOne(classQuery);
+				return classResult;
+			});
+
+			const classes = await Promise.all(classPromises);
+
+			result.classes = classes;
+			res.send(result);
+		});
+
 		// Send a ping to confirm a successful connection
 		await client.db("admin").command({ ping: 1 });
 		console.log(
