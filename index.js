@@ -50,6 +50,23 @@ async function run() {
 			res.send(result);
 		});
 
+		// Role update
+		const updateUserRole = async (req, res) => {
+			const id = req.params.id;
+			const role = req.params.role;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$set: {
+					userRole: role,
+				},
+			};
+
+			const result = await usersCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/users/:role/:id", updateUserRole);
+
 		// All Classes
 		app.get("/classes", async (req, res) => {
 			const cursor = classesCollection.find();
