@@ -52,7 +52,6 @@ async function run() {
 
 		// Selected Classes update
 		const updateUserSelectedClasses = async (req, res) => {
-			console.log(req.params);
 			const id = req.params.id;
 			const classId = req.params.classId;
 			const filter = { _id: new ObjectId(id) };
@@ -67,6 +66,23 @@ async function run() {
 		};
 
 		app.patch("/users/:classId/:id", updateUserSelectedClasses);
+
+		// Selected Classes update
+		const removeUserSelectedClasses = async (req, res) => {
+			const id = req.params.id;
+			const classId = req.params.classId;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$pull: {
+					mySelectedClasses: classId,
+				},
+			};
+
+			const result = await usersCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/users/:classId/:id/remove", removeUserSelectedClasses);
 
 		// Role update
 		const updateUserRole = async (req, res) => {
