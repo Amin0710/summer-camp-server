@@ -50,6 +50,24 @@ async function run() {
 			res.send(result);
 		});
 
+		// Selected Classes update
+		const updateUserSelectedClasses = async (req, res) => {
+			console.log(req.params);
+			const id = req.params.id;
+			const classId = req.params.classId;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$addToSet: {
+					mySelectedClasses: classId,
+				},
+			};
+
+			const result = await usersCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/users/:classId/:id", updateUserSelectedClasses);
+
 		// Role update
 		const updateUserRole = async (req, res) => {
 			const id = req.params.id;
@@ -73,6 +91,23 @@ async function run() {
 			const result = await cursor.toArray();
 			res.send(result);
 		});
+
+		// Classes update
+		const updateClassStatus = async (req, res) => {
+			const id = req.params.id;
+			const status = req.params.status;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$set: {
+					status: status,
+				},
+			};
+
+			const result = await classesCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/classes/:status/:id", updateClassStatus);
 
 		// All Instructors
 		app.get("/instructors", async (req, res) => {
