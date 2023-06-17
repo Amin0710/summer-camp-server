@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const stripe = require("stripe")(process.env.PAYMENT_SECRET_KEY);
 const port = process.env.PORT || 5001;
 
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
@@ -68,6 +69,23 @@ async function run() {
 		app.patch("/users/:classId/:id", updateUserSelectedClasses);
 
 		// Selected Classes update
+		const updateUserEnrolledClasses = async (req, res) => {
+			const id = req.params.id;
+			const classId = req.params.classId;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$addToSet: {
+					myEnrolledClasses: classId,
+				},
+			};
+
+			const result = await usersCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/users/:classId/:id/enrolled", updateUserEnrolledClasses);
+
+		// Selected Classes remove
 		const removeUserSelectedClasses = async (req, res) => {
 			const id = req.params.id;
 			const classId = req.params.classId;
@@ -108,7 +126,7 @@ async function run() {
 			res.send(result);
 		});
 
-		// Classes update
+		// Classes status update
 		const updateClassStatus = async (req, res) => {
 			const id = req.params.id;
 			const status = req.params.status;
@@ -124,6 +142,22 @@ async function run() {
 		};
 
 		app.patch("/classes/:status/:id", updateClassStatus);
+
+		// Classes availableSeats update
+		const updateClassAvailableSeats = async (req, res) => {
+			const id = req.params.id;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$inc: {
+					availableSeats: -1,
+				},
+			};
+
+			const result = await classesCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/classes/:id", updateClassAvailableSeats);
 
 		// All Instructors
 		app.get("/instructors", async (req, res) => {
