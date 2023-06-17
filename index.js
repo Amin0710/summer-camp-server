@@ -126,6 +126,13 @@ async function run() {
 			res.send(result);
 		});
 
+		// Add Classes
+		app.post("/classes", async (req, res) => {
+			const newClass = req.body;
+			const result = await classesCollection.insertOne(newClass);
+			res.send(result);
+		});
+
 		// Classes status update
 		const updateClassStatus = async (req, res) => {
 			const id = req.params.id;
@@ -165,6 +172,8 @@ async function run() {
 			const result = await cursor.toArray();
 			res.send(result);
 		});
+
+		// classesCollection.updateMany({}, { $set: { status: "approved" } });
 
 		// Specific Instructors
 		app.get("/instructors/:id", async (req, res) => {
