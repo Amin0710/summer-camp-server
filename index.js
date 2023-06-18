@@ -166,6 +166,23 @@ async function run() {
 
 		app.patch("/classes/:id", updateClassAvailableSeats);
 
+		// Classes Feedback update
+		const updateClassFeedback = async (req, res) => {
+			const id = req.params.id;
+			const adminFeedback = req.body.adminFeedback;
+			const filter = { _id: new ObjectId(id) };
+			const updateDoc = {
+				$set: {
+					adminFeedback: adminFeedback,
+				},
+			};
+
+			const result = await classesCollection.updateOne(filter, updateDoc);
+			res.send(result);
+		};
+
+		app.patch("/feedbackClasses/:id", updateClassFeedback);
+
 		// All Instructors
 		app.get("/instructors", async (req, res) => {
 			const cursor = instructorsCollection.find();
